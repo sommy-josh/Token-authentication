@@ -8,6 +8,11 @@ from django.contrib.auth.models import User
 from rest_framework.decorators import authentication_classes,permission_classes
 from rest_framework.authentication import SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from .tokens import create_jwt_pair_for_user
+
+
+    
+    
 
 @api_view(['POST'])
 def login(request):
@@ -16,10 +21,11 @@ def login(request):
     user=get_object_or_404(User, username=username)
     if not user.check_password(request.data['password']):
         return Response({"detail": "Invalid Credentials"},status=status.HTTP_404_NOT_FOUND)
-    token,created=Token.objects.get_or_create(user=user)
+    # token,created=Token.objects.get_or_create(user=user)
+    tokens=create_jwt_pair_for_user(user)
     serializer=UserSerializer(instance=user, context={"request":request})
     
-    return Response({"token":token.key, "user":serializer.data})
+    return Response({"token":tokens, "user":serializer.data})
 
 
 
