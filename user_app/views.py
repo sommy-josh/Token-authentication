@@ -16,12 +16,16 @@ from .tokens import create_jwt_pair_for_user
 
 @api_view(['POST'])
 def login(request):
+    #you are getting the user's details
     username=request.data.get('username')
     password=request.data.get('password')
+    # you are checking if the username matches with the one already created
     user=get_object_or_404(User, username=username)
+    #checking if the password matches
     if not user.check_password(request.data['password']):
         return Response({"detail": "Invalid Credentials"},status=status.HTTP_404_NOT_FOUND)
-    # token,created=Token.objects.get_or_create(user=user)
+    # token,created=Token.objects.get_or_create(user=user)-----This is for normal Token authentiation
+    #you are creating refresh and access tokens for the user
     tokens=create_jwt_pair_for_user(user)
     serializer=UserSerializer(instance=user, context={"request":request})
     
@@ -31,10 +35,14 @@ def login(request):
 
 @api_view(['POST'])
 def signup(request):
+    # you are serializing data being sent as a request
     serializer=UserSerializer(data=request.data)
+    #checking if the serializer data is valid
     if serializer.is_valid():
         serializer.save()
+        #you are collecting the data passed into the username field
         user=User.objects.get(username=request.data['username'])
+        # you are setting and hashing the password
         user.set_password(request.data['password'])
         user.save()
         token=Token.objects.create(user=user)
