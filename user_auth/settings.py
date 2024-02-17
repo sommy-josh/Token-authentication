@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     
 ]
-
+REST_FRAMEWORK={
+    "NON_FIELD_ERRORS_KEY": 'erros'
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
